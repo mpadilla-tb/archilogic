@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8" />
+  <title>fpe external id demo</title>
+  <script src="https://code.archilogic.com/fpe-sdk/v1.5.5/fpe.js?key=67c14f76-edd6-410a-98c3-843f27e92bee"></script>
+  <style>
+    #hello-plan {
+      height: 100%;
+    }
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <body>
+    <div id="hello-plan"></div>
+    <script type="module">
+      const colorMap = {
+        red: [204, 153, 136],
+        green: [177, 204, 136],
+        blue: [0, 100, 255]
+      };
+
+      const startupSettings = { showExternalIds: true };
+      const demoSceneId = "a9aaafdf-d5b6-4b4a-82a0-9efb6d5b155a";
+      const container = document.getElementById("hello-plan");
+
+      const floorPlan = new FloorPlanEngine(container, startupSettings);
+
+      floorPlan.loadScene(demoSceneId).then(() => {
+        fetch(
+          "datasheet.csv"
+        ).then(res => {
+          console.log(res);
+          if (res.ok) {
+            res.text().then(data => {
+              const lines = data.split("\r\n");
+              if (lines.length < 2) {
+                throw "The data source is empty";
+              }
+              let highlightData = [];
+              for (let i = 1; i < lines.length; i++) {
+                const [externalId, colorKey] = lines[i].split(",");
+                highlightData.push({
+                  externalId: externalId,
+                  color: colorMap[colorKey]
+                });
+              }
+              console.log(highlightData);
+              for (const item of highlightData) {
+                const space = findSpaceByExternalId(item.externalId);
+                space.node.setHighlight({
+                  fill: item.color
+                });
+              }
+            });
+          }
+        });
+      });
+
+      function findSpaceByExternalId(externalId) {
+        try {
+          return floorPlan.state.computed.spaces.filter(space => {
+            return space.externalIds.includes(externalId);
+          })[0];
+        } catch (e) {
+          throw `Space with external id ${externalId} could not be found`;
+        }
+      }
+    </script>
+  </body>
+</html>

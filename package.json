@@ -1,0 +1,13 @@
+{
+  "name": "floorplanenginesdk-sethighlight-from-google-sheet",
+  "version": "1.0.0",
+  "description": "This is a static template with no bundling",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo \"no build required\""
+  },
+  "keywords": [],
+  "author": "Milan Redele",
+  "license": "MIT",
+  "homepage": "https://developers.archilogic.com/"
+}
